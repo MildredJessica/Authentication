@@ -17,8 +17,7 @@ const PORT = process.env.PORT || 4000
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
+  'https://web-portal-weld-eta.vercel.app',
   process.env.FRONTEND_URL,
 ].filter(Boolean)
 
@@ -75,7 +74,8 @@ app.use((_req, res) => res.status(404).json({ status: 'error', message: 'Route n
 app.use(errorHandler)
 
 app.listen(PORT, () =>
-  console.log(`🚀 Insighta Labs+ backend running on http://localhost:${PORT}`)
+  console.log(`🚀 Insighta Labs+ backend running on https://web-portal-weld-eta.vercel.app
+    t:${PORT}`)
 )
 
 export default app
