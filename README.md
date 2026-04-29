@@ -29,22 +29,22 @@ insighta-web/       React web portal
 ## File Structure
 
 ```
-insighta-backend/
+backend/
 ├── prisma/
 │   ├── schema.prisma             # Users, RefreshTokens, Profiles
 │   ├── seed.js                   # Seeds 2026 profiles with UUID v7
 │   └── seed_profiles.json        # Real seed data — 2026 profiles, 65 countries
-├── src/
-│   ├── config/
-│   │   └── prisma.js             # Prisma client singleton
-│   ├── middleware/
-│   │   ├── requireAuth.js        # JWT validation → attaches req.user
-│   │   ├── apiVersion.js         # Rejects missing X-API-Version: 1
-│   │   ├── rateLimiter.js        # Isolated MemoryStore limiters (dev/prod aware)
-│   │   └── logger.js             # Request logger + global error handler
-│   ├── routes/
+├── config/
+│   └──prisma.js             # Prisma client singleton
+├── middleware/
+│   |   ├── requireAuth.js        # JWT validation → attaches req.user
+│   |   ├── apiVersion.js         # Rejects missing X-API-Version: 1
+│   |   ├── rateLimiter.js        # Isolated MemoryStore limiters (dev/prod aware)
+│   |   └── logger.js             # Request logger + global error handler
+├── routes/
 │   │   ├── auth.js               # /auth/github · /callback · /refresh · /logout
 │   │   └── profiles.js           # /api/profiles CRUD + search + export
+├── src/
 │   ├── services/
 │   │   ├── authService.js        # Token generation, rotation, GitHub exchange
 │   │   └── profileService.js     # Calls genderize / agify / nationalize APIs
@@ -56,7 +56,7 @@ insighta-backend/
 ├── .github/workflows/ci.yml
 └── package.json
 
-insighta-cli/
+cli/
 ├── bin/
 │   └── insighta.js               # Global binary entry point
 ├── src/
@@ -69,7 +69,7 @@ insighta-cli/
 ├── .github/workflows/ci.yml
 └── package.json
 
-insighta-web/
+web/
 ├── src/
 │   ├── pages/
 │   │   ├── Login.jsx             # GitHub OAuth entry
