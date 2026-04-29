@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  // id is UUID v7 — generated in application code via the `uuidv7` package.
+  // Do NOT rely on Prisma's @default(uuid()) here; that produces UUID v4.
+  id            String         @id @db.VarChar(36)
+  github_id     String         @unique @db.VarChar(64)
+  username      String         @db.VarChar(128)
+  email         String?        @db.VarChar(256)
+  avatar_url    String?        @db.VarChar(512)
+  role          Role           @default(analyst)
+  is_active     Boolean        @default(true)
+  last_login_at DateTime?
+  created_at    DateTime       @default(now())
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  user_id    String   @db.VarChar(36)
+  token_hash String   @unique @db.VarChar(256)
+  expires_at DateTime
+  revoked    Boolean  @default(false)
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  // Compound index used by token rotation: look up by hash, check revoked + expiry
+  @@index([token_hash, revoked, expires_at])
+  @@map("refresh_tokens")
+}
+
+model Profile {
+  // id is UUID v7 — generated in application code via the `uuidv7` package.
+  id                  String   @id @db.VarChar(36)
+  name                String   @unique @db.VarChar(256)
+  gender              String   @db.VarChar(16)
+  gender_probability  Float
+  age                 Int
+  age_group           String   @db.VarChar(16)
+  country_id          String   @db.VarChar(2)
+  country_name        String   @db.VarChar(128)
+  country_probability Float
+  created_at          DateTime @default(now())
+
+  @@index([gender])
+  @@index([age_group])
+  @@index([country_id])
+  @@index([age])
+  // Compound index for the most common combined filter: gender + country
+  @@index([gender, country_id])
+  // Compound index for age-range queries scoped by country
+  @@index([country_id, age])
+  @@map("profiles")
+}
+
+enum Role {
+  admin
+  analyst
+}
