@@ -39,7 +39,7 @@ async function main() {
     console.log('   Upserting — existing records will be skipped, new ones inserted.\n')
   }
 
-  // ── Upsert in batches of 100 ──────────────────────────────────────────────
+  // ── Upsert in batches of 10 ──────────────────────────────────────────────
   const BATCH = 10
   let inserted = 0
 
