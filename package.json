@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "lint": "eslint src/",
-    "start": "prisma migrate deploy && node server.js",
+    "start": "node server.js",
+    "migrate": "prisma migrate deploy",
     "test": "vitest run",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
