@@ -17,8 +17,9 @@ const PORT = process.env.PORT || 4000
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 const allowedOrigins = [
-  'https://web-portal-weld-eta.vercel.app',
+  // 'https://web-portal-weld-eta.vercel.app',
   process.env.FRONTEND_URL,
+  process.env.DEV_URL,
 ].filter(Boolean)
 
 app.use(cors({
