@@ -19,13 +19,16 @@ const PORT = process.env.PORT || 4000
 const allowedOrigins = [
   // 'https://web-portal-weld-eta.vercel.app',
   process.env.FRONTEND_URL,
-  process.env.DEV_URL,
 ].filter(Boolean)
 
 app.use(cors({
   origin: (origin, cb) => {
     // Allow no-origin requests (Postman, curl, server-side proxy)
     if (!origin) return cb(null, true)
+
+    // Allow any Vercel preview deployment for your project
+    if (origin.endsWith('.vercel.app')) return cb(null, true)
+      
     if (allowedOrigins.includes(origin)) return cb(null, true)
     cb(new Error(`CORS blocked: ${origin}`))
   },
