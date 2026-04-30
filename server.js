@@ -55,14 +55,14 @@ app.get('/auth/me', rateLimiter, (req, res) => {
 })
 
 // ── POST /auth/refresh and /auth/logout — strict rate limit ──────────────────
-app.post('/auth/refresh', authRateLimiter, (req, res, next) => authRouter(req, res, next))
-app.post('/auth/logout', authRateLimiter, (req, res, next) => authRouter(req, res, next))
+app.post('/auth/refresh', authRateLimiter, authRouter)
+app.post('/auth/logout', authRateLimiter,  authRouter)
 
 // ── All other /auth/* routes — general rate limit ─────────────────────────────
 app.use('/auth', rateLimiter, authRouter)
 
 // ── API routes ────────────────────────────────────────────────────────────────
-app.use('/api', rateLimiter, requireAuth, apiVersionCheck, profileRouter)
+app.use('/api/profiles', rateLimiter, requireAuth, apiVersionCheck, profileRouter)
 
 // ── Health ────────────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok' }))
@@ -74,8 +74,7 @@ app.use((_req, res) => res.status(404).json({ status: 'error', message: 'Route n
 app.use(errorHandler)
 
 app.listen(PORT, () =>
-  console.log(`🚀 Insighta Labs+ backend running on https://web-portal-weld-eta.vercel.app
-    t:${PORT}`)
+  console.log(`🚀 Insighta Labs+ backend running on https://web-portal-weld-eta.vercel.app`)
 )
 
 export default app
