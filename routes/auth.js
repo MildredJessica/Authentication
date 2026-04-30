@@ -15,7 +15,7 @@ const SCOPES = 'read:user user:email'
 const COOKIE_OPTS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  sameSite: 'none',
   maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRY_MS || '300000'),
   path: '/',
 }
