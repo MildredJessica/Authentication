@@ -8,8 +8,6 @@ datasource db {
 }
 
 model User {
-  // id is UUID v7 — generated in application code via the `uuidv7` package.
-  // Do NOT rely on Prisma's @default(uuid()) here; that produces UUID v4.
   id            String         @id @db.VarChar(36)
   github_id     String         @unique @db.VarChar(64)
   username      String         @db.VarChar(128)
@@ -34,13 +32,11 @@ model RefreshToken {
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
-  // Compound index used by token rotation: look up by hash, check revoked + expiry
   @@index([token_hash, revoked, expires_at])
   @@map("refresh_tokens")
 }
 
 model Profile {
-  // id is UUID v7 — generated in application code via the `uuidv7` package.
   id                  String   @id @db.VarChar(36)
   name                String   @unique @db.VarChar(256)
   gender              String   @db.VarChar(16)
@@ -56,9 +52,7 @@ model Profile {
   @@index([age_group])
   @@index([country_id])
   @@index([age])
-  // Compound index for the most common combined filter: gender + country
   @@index([gender, country_id])
-  // Compound index for age-range queries scoped by country
   @@index([country_id, age])
   @@map("profiles")
 }

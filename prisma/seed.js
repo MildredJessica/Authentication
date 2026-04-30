@@ -40,35 +40,32 @@ async function main() {
   }
 
   // ── Upsert in batches of 100 ──────────────────────────────────────────────
-  const BATCH = 100
+  const BATCH = 10
   let inserted = 0
 
   for (let i = 0; i < profiles.length; i += BATCH) {
     const batch = profiles.slice(i, i + BATCH)
 
-    await Promise.all(
-      batch.map((p, batchIndex) => {
-        const globalIndex = i + batchIndex
-        return prisma.profile.upsert({
-          where:  { name: p.name },
-          update: {},            // skip if name already exists
-          create: {
-            id:                  uuidv7(),
-            name:                p.name,
-            gender:              p.gender,
-            gender_probability:  p.gender_probability,
-            age:                 p.age,
-            age_group:           p.age_group,
-            country_id:          p.country_id,
-            country_name:        p.country_name,
-            country_probability: p.country_probability,
-            created_at:          spreadCreatedAt(globalIndex, profiles.length),
-          },
-        })
+    for (const [batchIndex, p] of batch.entries()) {
+      const globalIndex = i + batchIndex
+      await prisma.profile.upsert({  // ← await each one, no Promise.all
+        where:  { name: p.name },
+        update: {},
+        create: {
+          id:                  uuidv7(),
+          name:                p.name,
+          gender:              p.gender,
+          gender_probability:  p.gender_probability,
+          age:                 p.age,
+          age_group:           p.age_group,
+          country_id:          p.country_id,
+          country_name:        p.country_name,
+          country_probability: p.country_probability,
+          created_at:          spreadCreatedAt(globalIndex, profiles.length),
+        },
       })
-    )
-
-    inserted += batch.length
+      inserted++;
+    }
     process.stdout.write(`\r✅ Processed ${Math.min(inserted, profiles.length)} / ${profiles.length}`)
   }
 
