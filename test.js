@@ -4,12 +4,11 @@ import { getRedis } from '../config/redis.js'
 const json429 = (_req, res) =>
   res.status(429).json({ status: 'error', message: 'Too many requests, please slow down.' })
 
-// Normalize IPv6-mapped IPv4 (e.g. ::ffff:1.2.3.4 → 1.2.3.4)
 function normalizeIp(ip = '') {
   return ip.startsWith('::ffff:') ? ip.slice(7) : ip
 }
-const isDev = process.env.NODE_ENV !== 'production'
 
+const isDev = process.env.NODE_ENV !== 'production'
 
 // ── Store factory ─────────────────────────────────────────────────────────────
 // Use Redis store when Redis is available so rate limits work correctly
@@ -31,18 +30,7 @@ function makeStore(prefix) {
   return new MemoryStore()
 }
 
-/** 60 req/min — /auth/me, /auth/github, /auth/github/callback, all /api/* */
-export const rateLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: isDev ? 500 : 60,
-  standardHeaders: true,
-  legacyHeaders: false,
-  store: new MemoryStore(),
-  keyGenerator: (req) => `general_${req.user?.id ?? normalizeIp(req.ip)}`,
-  handler: json429,
-})
-
-/** 10 req/min — sensitive write endpoints only: /auth/refresh, /auth/logout */
+/** Sensitive endpoints: /auth/refresh, /auth/logout */
 export const authRateLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: isDev ? 100 : 10,
@@ -50,5 +38,16 @@ export const authRateLimiter = rateLimit({
   legacyHeaders: false,
   store: new MemoryStore(),
   keyGenerator: (req) => `auth_${normalizeIp(req.ip)}`,
+  handler: json429,
+})
+
+/** General: /auth/me, /auth/github, all /api/* */
+export const rateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: isDev ? 500 : 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  store: new MemoryStore(),
+  keyGenerator: (req) => `general_${req.user?.id ?? normalizeIp(req.ip)}`,
   handler: json429,
 })
